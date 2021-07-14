@@ -1,36 +1,55 @@
-﻿@{
+﻿@model IEnumerable<BigSchool_Lab04.Models.Course>
+
+@{
     ViewBag.Title = "Home Page";
 }
 
-@*<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
-        </p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-    </div>
-</div>*@
 
 <div class="row">
-    <ul>
-        @foreach(var Course in Model)
+    <ul class="course" style="margin-top:8%">
+        @foreach(var course in Model)
         {
             <li>
-                @Course.DateTime.ToString("dd/MM/yyyy HH:mm") - @Course.Name
+                @*@course.DateTime.ToString("dd/MM/yyyy HH:mm") - @course.Name;*@
+                <div class="date" style="background-color: #d41d50; width: 50px; border-radius: 5px; ">
+                    <div class="month" style="padding-left: 5px; color: white;">
+                        @course.DateTime.ToString("MM")
+                    </div>
+                    <div class="day" style="padding-left: 5px; color: white;">
+                        @course.DateTime.ToString("dd")
+                    </div>
+                </div>
+                <div class="details">
+                    <span class="lecture">
+                        @course.Name
+                        @*<button class="btn btn-default btn-sm js-toggle-follow" data-user-id ="@course.LecturerId">Follow ?</button>*@
+                    </span>
+                    <span class="category">
+                        @course.Category.Name
+                        <button data-course-id="@course.Id" class="btn btn-default btn-sm js-toggle-attendance">Going ?</button>
+                    </span>
+                </div>
             </li>
         }
     </ul>
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $(".js-tongle-attendance").click(function (e) {
+                var button = $(e.target);
+                $.post("/api/attendances", { Id: button.attr("data-course-id") })
+                    .done(function () {
+                        alert("Register course sucessfully!")
+                        button
+                            .removeClass("btn-default")
+                            .addClass("btn-info")
+                            .text("Going");
+                    }).fail(function () {
+                        alert("Something fail");
+                    });
+            });
+        });
+    </script>
+    }
 </div>
