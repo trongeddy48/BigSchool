@@ -36,7 +36,7 @@
 @section scripts{
     <script>
         $(document).ready(function () {
-            $(".js-tongle-attendance").click(function (e) {
+            $(".js-toggle-attendance").click(function (e) {
                 var button = $(e.target);
                 $.post("/api/attendances", { Id: button.attr("data-course-id") })
                     .done(function () {
