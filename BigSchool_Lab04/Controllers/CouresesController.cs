@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -73,6 +74,41 @@ namespace BigSchool_Lab04.Controllers
                 i.Name = currentUser.Name;
             }
             return View(courses);
+        }
+
+        [Authorize]
+        [HttpGet]
+        public ActionResult Edit(int id)
+        {
+            var userId = User.Identity.GetUserId();
+            BigSchool_Lab04Context context = new BigSchool_Lab04Context();
+            var course = context.Courses.Single(c => c.Id == id && c.LecturerId == userId);
+            course.ListCategory = context.Categories.ToList();
+            if (course == null)
+            {
+                return HttpNotFound();
+            }
+
+            return View(course);
+        }
+
+        [Authorize]
+        [HttpPost]
+        public ActionResult Edit(Course course)
+        {
+            BigSchool_Lab04Context context = new BigSchool_Lab04Context();
+            ApplicationUser user = System.Web.HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>().FindById(System.Web.HttpContext.Current.User.Identity.GetUserId());
+            course.LecturerId = user.Id;
+            context.Courses.AddOrUpdate(course);
+            context.SaveChanges();
+
+            var upcoming = context.Courses.Where(p => p.DateTime > DateTime.Now).OrderBy(p => p.DateTime).ToList();
+            foreach (Course c in upcoming)
+            {
+                c.LecturerId = user.Name;
+            }
+            return RedirectToAction("Index", "Home");
+            //return View("Index", upcoming);
         }
     }
 }
