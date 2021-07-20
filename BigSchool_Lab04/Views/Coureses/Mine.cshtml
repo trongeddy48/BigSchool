@@ -32,9 +32,32 @@
                 <div class="action">
                     @*<a href="">Edit</a>*@
                     <a href="@Url.Action("Edit","Coureses", new { id = course.Id, CategoryId = course.CategoryId })">Edit</a>
-                    <a href="">Delete</a>
+                    @*<a href="">Delete</a>*@
+                    <a id="@course.Id" href="#" class="delete">Delete</a>
                 </div>
             </li>
         }
     </ul>
 </div>
+
+@section scripts{
+    <script>
+        $(function () {
+            $(".delete").click(function () {
+
+                $.ajax({
+                    type: "GET",
+                    url: "../api/DeteleCourse",
+                    data: { 'id': $(this).attr("id") },
+                    success: function (dt) {
+                        alert("ok")
+                     //   $("body").load(@Url.Action("Mine","Courses"));
+                    },
+                    error: function (er) {
+                        alert("error")
+                    }
+                })
+            });
+        });
+    </script>
+}
